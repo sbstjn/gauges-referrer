@@ -13,7 +13,7 @@ $ > npm install
 ### Usage
 
 ```bash
-$ > ./gaug.js APIKEY SIDEID LASTDAY
+$ > ./gaug.js APIKEY SITEID LASTDAYS
 ```
 
 ```bash
