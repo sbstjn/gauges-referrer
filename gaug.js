@@ -27,6 +27,19 @@ var promptForDays = function(callback) {
 
 // Handle request for Last Days of Site using Token
 var handle = function(cfgToken, cfgSite, cfgDays, callback) {
+  // Be patient!
+  function promptLoop() {
+    var that = this;
+    
+    climate.prompt("I told you to wait!");
+    climate.fallback(function(input) {
+      promptLoop();
+    });
+  };
+  
+  climate.prompt("Requesting data from Gaug.es, please wait!");
+  climate.fallback(promptLoop);
+  
   // Pull emergency trigger
   if (parseInt(cfgDays, 10) > 400) {
     console.log("");
@@ -68,7 +81,7 @@ var handle = function(cfgToken, cfgSite, cfgDays, callback) {
     });
   }, function(err) {
     var data = [];
-
+  
     // Transform data
     for (var n in result) {
       data.push({
@@ -81,7 +94,7 @@ var handle = function(cfgToken, cfgSite, cfgDays, callback) {
     data.sort(function(a,b) {
       return a.views > b.views ? -1 : 1;
     });
-
+  
     callback(err, data);
   });
 };
@@ -105,6 +118,8 @@ function getReferrers(date, cfgToken, cfgSite, callback) {
 
 // Handle final callback
 var handleResult = function(err, data) {
+  console.log("");
+  
   if (!err && data) {
     console.log(JSON.stringify(data, ' ', 2));
   } else {
@@ -125,14 +140,14 @@ if (!cfgToken) {
   promptForToken(function(cfgToken) {
     promptForSite(function(cfgSite) {
       promptForDays(function(cfgDays) {
-        handle(cfgToken, cfgSite, cfgDays);
+        handle(cfgToken, cfgSite, cfgDays, handleResult);
       });
     });
   });
 } else if (!cfgSite) {
   promptForSite(function(cfgSite) {
     promptForDays(function(cfgDays) {
-      handle(cfgToken, cfgSite, cfgDays);
+      handle(cfgToken, cfgSite, cfgDays, handleResult);
     });
   });
 } else if (!cfgDays) {
